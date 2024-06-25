@@ -19,7 +19,10 @@ class MainActivity : AppCompatActivity() {
 
     private val tag = "MainActivity"
 
+    // Descriptor de archivo para la canción actual.
     val fd by lazy {assets.openFd(cancionActual)}
+
+    // MediaPlayer configurado con la canción actual.
     val mp by lazy {
         val m = MediaPlayer()
         m.setDataSource(
@@ -29,16 +32,19 @@ class MainActivity : AppCompatActivity() {
         )
         fd.close()
         m.prepare()
+        //Añadir el onComplementListener
+        m.setOnCompletionListener { nextClicked(controllers[ci.next]) }
         m
     }
 
-
+    // Lista de botones de control (anterior, detener, reproducir, siguiente).
     val controllers by lazy {
         listOf(R.id.btn_ant, R.id.btn_stop, R.id.btn_play, R.id.btn_sig).map {
             findViewById<MaterialButton>(it)
         }
     }
 
+    // Índices de los controladores.
     object ci{
         val prev = 0
         val stop = 1
@@ -46,15 +52,18 @@ class MainActivity : AppCompatActivity() {
         val next = 3
     }
 
+    // TextView para mostrar el nombre de la canción actual.
     val nombreCancion by lazy {
         findViewById<TextView>(R.id.songName)
     }
 
+    // Lista de archivos de canciones disponibles.
     val canciones by lazy {
         val nombreficheros = assets.list("")?.toList() ?: listOf()
         nombreficheros.filter {it.contains(".mp3")}
     }
 
+    // Índice de la canción actual en la lista.
     var cancionActualIndex = 0
         set(value){
             var v = if(value==-1){
@@ -66,6 +75,7 @@ class MainActivity : AppCompatActivity() {
             cancionActual = canciones[v]
         }
 
+    // Nombre del archivo de la canción actual.
     lateinit var cancionActual:String
 
 
